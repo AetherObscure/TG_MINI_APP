@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Панель управления VPN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+            margin: 0;
+            padding: 16px;
+        }
+        .button {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            width: 100%;
+            cursor: pointer;
+        }
+        .card {
+            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="card">
+            <h3>Статус VPN</h3>
+            <p id="subscription-status">Проверка подписки...</p>
+        </div>
+        <button class="button" onclick="connectVPN()">Подключиться к VPN</button>
+        <button class="button" onclick="showSettings()">Настройки</button>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        try {
+            let tg = window.Telegram.WebApp;
+            
+            // Проверяем, что объект tg существует
+            if (!tg) {
+                console.error('Telegram WebApp не инициализирован');
+                document.getElementById('subscription-status').textContent = 'Ошибка инициализации';
+                return;
+            }
+
+            // Расширяем окно на весь экран
+            tg.expand();
+
+            // Сообщаем Telegram, что приложение готово
+            tg.ready();
+
+            // Добавляем обработчик для закрытия приложения
+            tg.onClose(() => {
+                console.log('WebApp закрывается');
+            });
+
+            // Функции для кнопок
+            window.connectVPN = function() {
+                try {
+                    console.log('Попытка подключения к VPN');
+                    tg.sendData(JSON.stringify({action: 'connect_vpn'}));
+                } catch (e) {
+                    console.error('Ошибка при подключении к VPN:', e);
+                    document.getElementById('subscription-status').textContent = 'Ошибка подключения';
+                }
+            };
+
+            window.showSettings = function() {
+                try {
+                    console.log('Открытие настроек');
+                    tg.sendData(JSON.stringify({action: 'show_settings'}));
+                } catch (e) {
+                    console.error('Ошибка при открытии настроек:', e);
+                }
+            };
+
+            // Инициализация при загрузке страницы
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Страница загружена');
+                document.getElementById('subscription-status').textContent = 'Подключено';
+            });
+
+        } catch (e) {
+            console.error('Ошибка инициализации WebApp:', e);
+            document.getElementById('subscription-status').textContent = 'Ошибка запуска приложения';
+        }
+    </script>
+</body>
+</html> 
